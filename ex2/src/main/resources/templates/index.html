@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Bootstrap CRUD Data Table for Database with Modal Form</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto|Varela+Round">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
+            integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"
+            integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF"
+            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+    <script src="main.js"></script>
+</head>
+<body>
+<div class="container-xl">
+    <div class="table-responsive">
+        <div class="table-wrapper">
+            <div class="table-title">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <h2>Manage <b>Employees</b></h2>
+                    </div>
+                    <div class="col-sm-6">
+                        <a href="/employees/add" class="btn btn-success"><i class="material-icons">&#xE147;</i> <span>Add New Employee</span></a>
+                        <a data-bs-target="#exampleModal" data-bs-toggle="modal" class="btn btn-danger"><i
+                                class="material-icons">&#xE15C;</i> <span>Delete</span></a>
+                    </div>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead>
+                <tr>
+                    <th>
+							<span class="custom-checkbox">
+								<input type="checkbox" id="selectAll">
+								<label for="selectAll"></label>
+							</span>
+                    </th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Address</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="employee : ${employees}">
+                    <td>
+							<span class="custom-checkbox">
+								<input type="checkbox" class="employeeID checkbox" id="checkbox1" name="options[]"
+                                       th:value="${employee.getId()}">
+								<label for="checkbox1"></label>
+							</span>
+                    </td>
+                    <td th:text="${employee.getName()}"></td>
+                    <td th:text="${employee.getEmail()}"></td>
+                    <td th:text="${employee.getAddress()}"></td>
+                    <td th:text="${employee.getPhone()}"></td>
+                    <td>
+                        <a th:href=" '/employees/edit/' + ${employee.getId()}" class="edit"><i class="material-icons"
+                                                                                               data-toggle="tooltip"
+                                                                                               title="Edit">&#xE254;</i></a>
+                        <a th:data-id="${employee.getId()}" data-bs-target="#exampleModal" class="delete"
+                           data-bs-toggle="modal"><i class="material-icons" data-toggle="tooltip" title="Delete">&#xE872;</i></a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <div class="clearfix">
+                <ul class="pagination">
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/employees(page=0)}">First</a>
+                    </li>
+                    <li class="page-item" th:classappend="${!employees.hasPrevious()}  ? 'disabled' : ''">
+                        <a class="page-link" th:if="${employees.hasPrevious()}"
+                           th:href="@{/employees(page=${employees.previousPageable().pageNumber})}">Previous</a>
+                    </li>
+                    <li th:each="i : ${#numbers.sequence(0, employees.totalPages - 1)}"
+                        th:class="${i == employees.number ? 'page-item active' : 'page-item'}"
+                        th:if="${i >= employees.number - 2 and i <= employees.number + 2}">
+                        <a th:if="${i >= 0}" class="page-link" th:href="@{/employees(page=${i})}" th:text="${i + 1}"></a>
+                    </li>
+                    <li class="page-item" th:classappend="${!employees.hasNext()} ? 'disabled':''">
+                        <a class="page-link" th:if="${employees.hasNext()}"
+                           th:href="@{/employees(page=${employees.nextPageable().pageNumber})}">Next</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" th:href="@{/employees(page=${employees.totalPages - 1 > 0 ? employees.totalPages - 1 : 0})}">Last</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+<form name="delete-form" method="POST">
+
+</form>
+<!-- Delete Modal HTML -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel" style="color: black;">Xóa người dùng?</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Bạn có muốn xóa người dùng này?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger deleteUser">Xóa bỏ</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let exampleModal = document.getElementById("exampleModal")
+    let deleteForm = document.forms['delete-form']
+    let employeeID = new Set()
+    let btnRemove = document.querySelector(".deleteUser")
+    let checkbox = document.querySelectorAll('.checkbox')
+    let eID
+    let id
+
+    exampleModal.addEventListener('show.bs.modal', function (event) {
+        checkbox.forEach((checkbox) => {
+            if (checkbox.checked) {
+                employeeID.add(checkbox.value)
+            }
+        })
+        let [...all] = employeeID
+        id = all.join(",")
+        //
+        let button = event.relatedTarget
+        eID = button.getAttribute('data-id')
+    })
+
+    btnRemove.onclick = function () {
+        if (eID !== null) {
+            deleteForm.action = '/employees/delete/' + eID
+        } else {
+            deleteForm.action = '/employees/delete/' + id
+        }
+        deleteForm.submit()
+    }
+
+</script>
+</body>
+</html>
